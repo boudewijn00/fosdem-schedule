@@ -1,4 +1,4 @@
-import { getMyEvents, toggleEvent } from './storage.js';
+import { getMyEvents, toggleEvent, getMyEventsFilterState, saveMyEventsFilterState } from './storage.js';
 import { updateAllButtonStates } from './buttons.js';
 import { applyFilters } from './filters.js';
 
@@ -16,8 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function handleFilters() {
+    saveMyEventsFilterState(myEventsFilter.checked);
     applyFilters(dateFilter, trackFilter, myEventsFilter, eventCards, eventCount);
   }
+
+  // Restore filter state from localStorage
+  myEventsFilter.checked = getMyEventsFilterState();
 
   // Initialize button click handlers
   saveButtons.forEach(button => {
@@ -34,6 +38,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize states
   updateAllButtonStates(saveButtons);
   updateMyEventsCount();
+
+  // Apply filters on load (handles restored "my events only" state)
+  if (myEventsFilter.checked) {
+    handleFilters();
+  }
 
   // Filter listeners
   dateFilter.addEventListener('change', handleFilters);

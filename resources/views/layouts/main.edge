@@ -30,27 +30,8 @@
         }
       };
     </script>
-    <style>
-      .event-card.in-overlap .event-card-inner {
-        flex-direction: column;
-      }
-      .event-card.in-overlap .event-card-meta {
-        order: -1;
-        flex-direction: row;
-        align-items: center;
-        justify-content: flex-start;
-        text-align: left;
-        gap: 0.75rem;
-        margin-bottom: 0.5rem;
-      }
-      .event-card.in-overlap .event-card-meta .save-btn {
-        margin-bottom: 0;
-      }
-      .event-card.in-overlap .event-duration,
-      .event-card.in-overlap .event-date {
-        display: none;
-      }
-    </style>
+
+    @vite(['resources/css/app.css'])
   </head>
   <body class="min-h-screen bg-gray-50 font-sans">
     <header class="bg-fosdem-dark text-white py-8">
