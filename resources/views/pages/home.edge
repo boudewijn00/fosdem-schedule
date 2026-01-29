@@ -43,7 +43,11 @@
     <main class="max-w-6xl mx-auto px-4 py-8">
       <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <h2 class="text-2xl font-semibold text-gray-800">Schedule</h2>
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-4">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" id="my-events-filter" class="w-4 h-4 text-fosdem-purple rounded border-gray-300 focus:ring-fosdem-purple">
+            <span class="text-sm text-gray-700">My events only (<span id="my-events-count">0</span>)</span>
+          </label>
           <select
             id="track-filter"
             class="block w-64 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-sm"
@@ -64,7 +68,7 @@
       @else
         <div class="space-y-4">
           @each(event in events)
-            <article class="event-card bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow" data-track="{{ event.track }}">
+            <article class="event-card bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow" data-track="{{ event.track }}" data-id="{{ event.id }}">
               <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div class="flex-1">
                   <h3 class="text-lg font-semibold text-gray-900">
@@ -95,10 +99,16 @@
                   @end
                 </div>
 
-                <div class="md:text-right shrink-0">
+                <div class="md:text-right shrink-0 flex flex-col items-end gap-2">
+                  <button
+                    class="save-btn px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors"
+                    data-id="{{ event.id }}"
+                  >
+                    Add to my events
+                  </button>
                   <div class="text-sm font-medium text-gray-900">{{ event.start }}</div>
                   <div class="text-xs text-gray-500">{{ event.duration }}</div>
-                  <div class="text-xs text-gray-400 mt-1">
+                  <div class="text-xs text-gray-400">
                     {{ event.date.split('T')[0] }}
                   </div>
                 </div>
@@ -118,16 +128,68 @@
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const trackFilter = document.getElementById('track-filter');
+        const myEventsFilter = document.getElementById('my-events-filter');
         const eventCount = document.getElementById('event-count');
+        const myEventsCount = document.getElementById('my-events-count');
         const eventCards = document.querySelectorAll('.event-card');
+        const saveButtons = document.querySelectorAll('.save-btn');
 
-        trackFilter.addEventListener('change', () => {
+        const STORAGE_KEY = 'fosdem-my-events';
+
+        function getMyEvents() {
+          const stored = localStorage.getItem(STORAGE_KEY);
+          return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveMyEvents(events) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+        }
+
+        function isEventSaved(eventId) {
+          return getMyEvents().includes(eventId);
+        }
+
+        function toggleEvent(eventId) {
+          const myEvents = getMyEvents();
+          const index = myEvents.indexOf(eventId);
+          if (index === -1) {
+            myEvents.push(eventId);
+          } else {
+            myEvents.splice(index, 1);
+          }
+          saveMyEvents(myEvents);
+          return index === -1;
+        }
+
+        function updateButtonState(button, isSaved) {
+          if (isSaved) {
+            button.textContent = 'Remove from my events';
+            button.classList.remove('border-gray-300', 'text-gray-700', 'hover:bg-gray-50');
+            button.classList.add('border-fosdem-purple', 'bg-fosdem-purple', 'text-white', 'hover:bg-purple-700');
+          } else {
+            button.textContent = 'Add to my events';
+            button.classList.add('border-gray-300', 'text-gray-700', 'hover:bg-gray-50');
+            button.classList.remove('border-fosdem-purple', 'bg-fosdem-purple', 'text-white', 'hover:bg-purple-700');
+          }
+        }
+
+        function updateMyEventsCount() {
+          myEventsCount.textContent = getMyEvents().length;
+        }
+
+        function applyFilters() {
           const selectedTrack = trackFilter.value;
+          const showOnlyMyEvents = myEventsFilter.checked;
+          const myEvents = getMyEvents();
           let visibleCount = 0;
 
           eventCards.forEach(card => {
             const cardTrack = card.getAttribute('data-track');
-            if (!selectedTrack || cardTrack === selectedTrack) {
+            const cardId = card.getAttribute('data-id');
+            const matchesTrack = !selectedTrack || cardTrack === selectedTrack;
+            const matchesMyEvents = !showOnlyMyEvents || myEvents.includes(cardId);
+
+            if (matchesTrack && matchesMyEvents) {
               card.style.display = '';
               visibleCount++;
             } else {
@@ -136,7 +198,27 @@
           });
 
           eventCount.textContent = `${visibleCount} events`;
+        }
+
+        // Initialize button states
+        saveButtons.forEach(button => {
+          const eventId = button.getAttribute('data-id');
+          updateButtonState(button, isEventSaved(eventId));
+
+          button.addEventListener('click', () => {
+            const isSaved = toggleEvent(eventId);
+            updateButtonState(button, isSaved);
+            updateMyEventsCount();
+            applyFilters();
+          });
         });
+
+        // Initialize counts
+        updateMyEventsCount();
+
+        // Filter listeners
+        trackFilter.addEventListener('change', applyFilters);
+        myEventsFilter.addEventListener('change', applyFilters);
       });
     </script>
   </body>
