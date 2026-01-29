@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import cache from '@adonisjs/cache/services/main'
 
 interface FosdemEvent {
   id: string
@@ -22,14 +23,16 @@ export default class HomeController {
   }
 
   private async fetchFosdemEvents(): Promise<FosdemEvent[]> {
-    try {
-      const response = await fetch('https://fosdem.org/2026/schedule/xml')
-      const xml = await response.text()
-      return this.parseEvents(xml)
-    } catch (error) {
-      console.error('Failed to fetch FOSDEM schedule:', error)
-      return []
-    }
+    return cache.getOrSet({
+      key: 'fosdem-events',
+      ttl: '1h',
+      factory: async () => {
+        console.log('Fetching fresh FOSDEM schedule')
+        const response = await fetch('https://fosdem.org/2026/schedule/xml')
+        const xml = await response.text()
+        return this.parseEvents(xml)
+      },
+    })
   }
 
   private parseEvents(xml: string): FosdemEvent[] {
