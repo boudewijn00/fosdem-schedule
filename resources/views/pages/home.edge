@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FOSDEM 2026 Schedule</title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link
+      href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Instrument Sans", "sans-serif"]
+            },
+            colors: {
+              fosdem: {
+                purple: "#5A45FF",
+                dark: "#21201c"
+              }
+            }
+          }
+        }
+      };
+    </script>
+  </head>
+  <body class="min-h-screen bg-gray-50 font-sans">
+    <header class="bg-fosdem-dark text-white py-8">
+      <div class="max-w-6xl mx-auto px-4">
+        <h1 class="text-3xl font-bold">FOSDEM 2026</h1>
+        <p class="text-gray-300 mt-2">Free and Open Source Software Developers' European Meeting</p>
+        <p class="text-gray-400 text-sm mt-1">January 31 - February 1, 2026 | Brussels, Belgium</p>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <h2 class="text-2xl font-semibold text-gray-800">Schedule</h2>
+        <div class="flex items-center gap-4">
+          <select
+            id="track-filter"
+            class="block w-64 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-sm"
+          >
+            <option value="">All devrooms</option>
+            @each(track in tracks)
+              <option value="{{ track }}">{{ track }}</option>
+            @end
+          </select>
+          <span id="event-count" class="text-sm text-gray-500 whitespace-nowrap">{{ events.length }} events</span>
+        </div>
+      </div>
+
+      @if(events.length === 0)
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-800">
+          No events found. The schedule may not be available yet.
+        </div>
+      @else
+        <div class="space-y-4">
+          @each(event in events)
+            <article class="event-card bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow" data-track="{{ event.track }}">
+              <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold text-gray-900">
+                    <a href="{{ event.url }}" target="_blank" class="hover:text-fosdem-purple">
+                      {{ event.title }}
+                    </a>
+                  </h3>
+
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      {{ event.track }}
+                    </span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                      {{ event.room }}
+                    </span>
+                  </div>
+
+                  @if(event.persons.length > 0)
+                    <p class="text-sm text-gray-600 mt-2">
+                      <span class="font-medium">Speakers:</span> {{ event.persons.join(', ') }}
+                    </p>
+                  @end
+
+                  @if(event.abstract)
+                    <p class="text-sm text-gray-500 mt-3 line-clamp-3">
+                      {{ event.abstract }}
+                    </p>
+                  @end
+                </div>
+
+                <div class="md:text-right shrink-0">
+                  <div class="text-sm font-medium text-gray-900">{{ event.start }}</div>
+                  <div class="text-xs text-gray-500">{{ event.duration }}</div>
+                  <div class="text-xs text-gray-400 mt-1">
+                    {{ event.date.split('T')[0] }}
+                  </div>
+                </div>
+              </div>
+            </article>
+          @end
+        </div>
+      @end
+    </main>
+
+    <footer class="bg-gray-100 border-t border-gray-200 py-6 mt-8">
+      <div class="max-w-6xl mx-auto px-4 text-center text-sm text-gray-500">
+        Data from <a href="https://fosdem.org/2026/" target="_blank" class="text-fosdem-purple hover:underline">fosdem.org</a>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const trackFilter = document.getElementById('track-filter');
+        const eventCount = document.getElementById('event-count');
+        const eventCards = document.querySelectorAll('.event-card');
+
+        trackFilter.addEventListener('change', () => {
+          const selectedTrack = trackFilter.value;
+          let visibleCount = 0;
+
+          eventCards.forEach(card => {
+            const cardTrack = card.getAttribute('data-track');
+            if (!selectedTrack || cardTrack === selectedTrack) {
+              card.style.display = '';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+
+          eventCount.textContent = `${visibleCount} events`;
+        });
+      });
+    </script>
+  </body>
+</html>
