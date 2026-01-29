@@ -49,6 +49,15 @@
             <span class="text-sm text-gray-700">My events only (<span id="my-events-count">0</span>)</span>
           </label>
           <select
+            id="date-filter"
+            class="block w-40 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-sm"
+          >
+            <option value="">All days</option>
+            @each(date in dates)
+              <option value="{{ date }}">{{ date }}</option>
+            @end
+          </select>
+          <select
             id="track-filter"
             class="block w-64 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-sm"
           >
@@ -68,7 +77,7 @@
       @else
         <div class="space-y-4">
           @each(event in events)
-            <article class="event-card bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow" data-track="{{ event.track }}" data-id="{{ event.id }}">
+            <article class="event-card bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow" data-track="{{ event.track }}" data-date="{{ event.date.split('T')[0] }}" data-id="{{ event.id }}">
               <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div class="flex-1">
                   <h3 class="text-lg font-semibold text-gray-900">
@@ -86,31 +95,44 @@
                     </span>
                   </div>
 
-                  @if(event.persons.length > 0)
-                    <p class="text-sm text-gray-600 mt-2">
-                      <span class="font-medium">Speakers:</span> {{ event.persons.join(', ') }}
-                    </p>
-                  @end
-
                   @if(event.abstract)
-                    <p class="text-sm text-gray-500 mt-3 line-clamp-3">
+                    <p class="text-sm text-gray-500 mt-3">
                       {{ event.abstract }}
                     </p>
                   @end
+
+                  @if(event.persons.length > 0)
+                    <div class="mt-3">
+                      <h4>{{ event.persons.length === 1 ? 'Speaker' : 'Speakers' }}</h4>
+                      <div class="mt-1 space-y-2">
+                        @each(person in event.persons)
+                          <div class="text-sm">
+                            <span class="font-medium text-gray-800">{{ person.name }}</span>
+                            @if(person.bio)
+                              <button type="button" class="bio-toggle ml-1 text-gray-400 hover:text-fosdem-purple" title="Show bio">
+                                <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                              </button>
+                              <p class="bio-content text-gray-500 mt-0.5 hidden">{{ person.bio }}</p>
+                            @end
+                          </div>
+                        @end
+                      </div>
+                    </div>
+                  @end
                 </div>
 
-                <div class="md:text-right shrink-0 flex flex-col items-end gap-2">
+                <div class="shrink-0 flex flex-col items-end text-right gap-1">
                   <button
-                    class="save-btn px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors"
+                    class="save-btn px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors mb-1"
                     data-id="{{ event.id }}"
                   >
                     Add to my events
                   </button>
-                  <div class="text-sm font-medium text-gray-900">{{ event.start }}</div>
+                  <div class="text-sm font-medium text-gray-900">{{ event.start }} - {{ event.end }}</div>
                   <div class="text-xs text-gray-500">{{ event.duration }}</div>
-                  <div class="text-xs text-gray-400">
-                    {{ event.date.split('T')[0] }}
-                  </div>
+                  <div class="text-xs text-gray-400">{{ event.date.split('T')[0] }}</div>
                 </div>
               </div>
             </article>
@@ -127,6 +149,7 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
+        const dateFilter = document.getElementById('date-filter');
         const trackFilter = document.getElementById('track-filter');
         const myEventsFilter = document.getElementById('my-events-filter');
         const eventCount = document.getElementById('event-count');
@@ -178,18 +201,21 @@
         }
 
         function applyFilters() {
+          const selectedDate = dateFilter.value;
           const selectedTrack = trackFilter.value;
           const showOnlyMyEvents = myEventsFilter.checked;
           const myEvents = getMyEvents();
           let visibleCount = 0;
 
           eventCards.forEach(card => {
+            const cardDate = card.getAttribute('data-date');
             const cardTrack = card.getAttribute('data-track');
             const cardId = card.getAttribute('data-id');
+            const matchesDate = !selectedDate || cardDate === selectedDate;
             const matchesTrack = !selectedTrack || cardTrack === selectedTrack;
             const matchesMyEvents = !showOnlyMyEvents || myEvents.includes(cardId);
 
-            if (matchesTrack && matchesMyEvents) {
+            if (matchesDate && matchesTrack && matchesMyEvents) {
               card.style.display = '';
               visibleCount++;
             } else {
@@ -217,8 +243,17 @@
         updateMyEventsCount();
 
         // Filter listeners
+        dateFilter.addEventListener('change', applyFilters);
         trackFilter.addEventListener('change', applyFilters);
         myEventsFilter.addEventListener('change', applyFilters);
+
+        // Bio toggle
+        document.querySelectorAll('.bio-toggle').forEach(button => {
+          button.addEventListener('click', () => {
+            const bio = button.nextElementSibling;
+            bio.classList.toggle('hidden');
+          });
+        });
       });
     </script>
   </body>
