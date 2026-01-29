@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FOSDEM 2026 Schedule</title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link
+      href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Instrument Sans", "sans-serif"]
+            },
+            colors: {
+              fosdem: {
+                purple: "#5A45FF",
+                dark: "#21201c"
+              }
+            }
+          }
+        }
+      };
+    </script>
+    <style>
+      .event-card.in-overlap .event-card-inner {
+        flex-direction: column;
+      }
+      .event-card.in-overlap .event-card-meta {
+        order: -1;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: left;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      .event-card.in-overlap .event-card-meta .save-btn {
+        margin-bottom: 0;
+      }
+      .event-card.in-overlap .event-duration,
+      .event-card.in-overlap .event-date {
+        display: none;
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-gray-50 font-sans">
+    <header class="bg-fosdem-dark text-white py-8">
+      <div class="max-w-6xl mx-auto px-4">
+        <h1 class="text-3xl font-bold">FOSDEM 2026</h1>
+        <p class="text-gray-300 mt-2">Free and Open Source Software Developers' European Meeting</p>
+        <p class="text-gray-400 text-sm mt-1">January 31 - February 1, 2026 | Brussels, Belgium</p>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+      {{{ await $slots.main() }}}
+    </main>
+
+    <footer class="bg-gray-100 border-t border-gray-200 py-6 mt-8">
+      <div class="max-w-6xl mx-auto px-4 text-center text-sm text-gray-500">
+        Data from <a href="https://fosdem.org/2026/" target="_blank" class="text-fosdem-purple hover:underline">fosdem.org</a>
+      </div>
+    </footer>
+
+    <script type="module" src="/js/schedule.js"></script>
+  </body>
+</html>
