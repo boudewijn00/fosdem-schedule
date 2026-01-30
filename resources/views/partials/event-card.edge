@@ -46,15 +46,15 @@
             @each(person in event.persons)
               <div class="text-sm">
                 @if(person.bio)
-                  <button type="button" class="bio-toggle inline-flex items-center gap-1 font-medium text-gray-800 hover:text-fosdem-purple transition-colors">
-                    <svg class="bio-chevron w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <button type="button" class="bio-toggle inline-flex items-center gap-1 max-w-full font-medium text-gray-800 hover:text-fosdem-purple transition-colors">
+                    <svg class="bio-chevron w-4 h-4 shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
-                    {{ person.name }}
+                    <span class="truncate">{{ person.name }}</span>
                   </button>
                   <p class="bio-content text-gray-500 mt-1 hidden">{{ person.bio }}</p>
                 @else
-                  <span class="font-medium text-gray-800">{{ person.name }}</span>
+                  <span class="font-medium text-gray-800 truncate block">{{ person.name }}</span>
                 @end
               </div>
             @end
