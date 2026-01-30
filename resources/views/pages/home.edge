@@ -1,14 +1,17 @@
 @component('layouts/main')
-  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-    <h2 class="text-2xl font-semibold text-gray-800">Schedule</h2>
-    <div class="flex flex-wrap items-center gap-4">
+  <div class="mb-6 flex flex-col gap-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl md:text-2xl font-semibold text-gray-800">Schedule</h2>
+      <span id="event-count" class="text-sm text-gray-500 whitespace-nowrap">{{ events.length }} events</span>
+    </div>
+    <div class="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-4">
       <label class="flex items-center gap-2 cursor-pointer">
-        <input type="checkbox" id="my-events-filter" class="w-4 h-4 text-fosdem-purple rounded border-gray-300 focus:ring-fosdem-purple">
-        <span class="text-sm text-gray-700">My events only (<span id="my-events-count">0</span>)</span>
+        <input type="checkbox" id="my-events-filter" class="w-5 h-5 md:w-4 md:h-4 text-fosdem-purple rounded border-gray-300 focus:ring-fosdem-purple">
+        <span class="text-base md:text-sm text-gray-700">My events only (<span id="my-events-count">0</span>)</span>
       </label>
       <select
         id="date-filter"
-        class="block w-40 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-sm"
+        class="block w-full md:w-40 px-3 py-3 md:py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-base md:text-sm"
       >
         <option value="">All days</option>
         @each(date in dates)
@@ -17,14 +20,13 @@
       </select>
       <select
         id="track-filter"
-        class="block w-64 px-3 py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-sm"
+        class="block w-full md:w-64 px-3 py-3 md:py-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-fosdem-purple focus:border-fosdem-purple text-base md:text-sm"
       >
         <option value="">All devrooms</option>
         @each(track in tracks)
           <option value="{{ track }}">{{ track }}</option>
         @end
       </select>
-      <span id="event-count" class="text-sm text-gray-500 whitespace-nowrap">{{ events.length }} events</span>
     </div>
   </div>
 

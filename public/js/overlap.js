@@ -80,7 +80,7 @@ export function clearOverlapLayout(eventCards) {
     wrapper.remove();
   });
   overlapWrappers.length = 0;
-  eventCards.forEach(card => card.classList.remove('flex-1', 'min-w-0', 'in-overlap'));
+  eventCards.forEach(card => card.classList.remove('flex-1', 'min-w-0'));
 }
 
 export function applyOverlapLayout(groups) {
@@ -101,7 +101,7 @@ export function applyOverlapLayout(groups) {
     firstCard.parentNode.insertBefore(wrapper, firstCard);
 
     cards.forEach(card => {
-      card.classList.add('flex-1', 'min-w-0', 'in-overlap');
+      card.classList.add('flex-1', 'min-w-0');
       wrapper.appendChild(card);
     });
 

@@ -9,26 +9,16 @@ body {
   width: 100%;
 }
 
-/* Overlap layout styles for "My events" view */
-.event-card.in-overlap .event-card-inner {
-  flex-direction: column;
+/* Collapsible abstract */
+.abstract-text.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.event-card.in-overlap .event-card-meta {
-  order: -1;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: left;
-  gap: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.event-card.in-overlap .event-card-meta .save-btn {
-  margin-bottom: 0;
-}
-
-.event-card.in-overlap .event-duration,
-.event-card.in-overlap .event-date {
-  display: none;
+.abstract-text.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
 }
