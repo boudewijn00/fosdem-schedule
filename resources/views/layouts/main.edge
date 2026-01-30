@@ -34,15 +34,15 @@
     @vite(['resources/css/app.css'])
   </head>
   <body class="min-h-screen bg-gray-50 font-sans">
-    <header class="bg-fosdem-dark text-white py-8">
+    <header class="bg-fosdem-dark text-white py-4 md:py-8">
       <div class="max-w-6xl mx-auto px-4">
-        <h1 class="text-3xl font-bold">FOSDEM 2026</h1>
-        <p class="text-gray-300 mt-2">Free and Open Source Software Developers' European Meeting</p>
-        <p class="text-gray-400 text-sm mt-1">January 31 - February 1, 2026 | Brussels, Belgium</p>
+        <h1 class="text-2xl md:text-3xl font-bold">FOSDEM 2026</h1>
+        <p class="text-gray-300 mt-1 md:mt-2 text-sm md:text-base">Free and Open Source Software Developers' European Meeting</p>
+        <p class="text-gray-400 text-xs md:text-sm mt-1">January 31 - February 1, 2026 | Brussels, Belgium</p>
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-6xl mx-auto px-4 py-4 md:py-8">
       {{{ await $slots.main() }}}
     </main>
 

@@ -49,11 +49,23 @@ document.addEventListener('DOMContentLoaded', () => {
   trackFilter.addEventListener('change', handleFilters);
   myEventsFilter.addEventListener('change', handleFilters);
 
-  // Bio toggle
+  // Bio toggle (clicking speaker name)
   document.querySelectorAll('.bio-toggle').forEach(button => {
     button.addEventListener('click', () => {
       const bio = button.nextElementSibling;
+      const chevron = button.querySelector('.bio-chevron');
       bio.classList.toggle('hidden');
+      chevron.classList.toggle('rotate-180');
+    });
+  });
+
+  // Abstract toggle
+  document.querySelectorAll('.abstract-toggle').forEach(button => {
+    button.addEventListener('click', () => {
+      const text = button.previousElementSibling;
+      const isExpanded = text.classList.toggle('expanded');
+      text.classList.toggle('line-clamp-2');
+      button.textContent = isExpanded ? 'Read less' : 'Read more';
     });
   });
 });
