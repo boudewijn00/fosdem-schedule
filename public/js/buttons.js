@@ -20,13 +20,17 @@ export function updateButtonState(button, isSaved, hasOverlap) {
 
 export function updateAllButtonStates(saveButtons) {
   saveButtons.forEach(button => {
-    const eventId = button.getAttribute('data-id');
-    const card = button.closest('.event-card');
-    const date = card.getAttribute('data-date');
-    const start = card.getAttribute('data-start');
-    const end = card.getAttribute('data-end');
-    const isSaved = isEventSaved(eventId);
-    const hasOverlap = !isSaved && hasOverlapWithSavedEvents(eventId, date, start, end);
-    updateButtonState(button, isSaved, hasOverlap);
+    updateSingleButtonState(button);
   });
+}
+
+export function updateSingleButtonState(button) {
+  const eventId = button.getAttribute('data-id');
+  const card = button.closest('.event-card');
+  const date = card.getAttribute('data-date');
+  const start = card.getAttribute('data-start');
+  const end = card.getAttribute('data-end');
+  const isSaved = isEventSaved(eventId);
+  const hasOverlap = !isSaved && hasOverlapWithSavedEvents(eventId, date, start, end);
+  updateButtonState(button, isSaved, hasOverlap);
 }

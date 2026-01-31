@@ -35,10 +35,8 @@
       No events found. The schedule may not be available yet.
     </div>
   @else
-    <div class="space-y-4">
-      @each(event in events)
-        @include('partials/event-card')
-      @end
-    </div>
+    <div id="events-container" class="space-y-4"></div>
   @end
+
+  <script id="events-data" type="application/json">{{{ JSON.stringify(events) }}}</script>
 @end

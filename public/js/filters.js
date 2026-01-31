@@ -1,6 +1,19 @@
 import { getMyEvents } from './storage.js';
 import { findOverlapGroups, clearOverlapLayout, applyOverlapLayout, getOverlapWrappers } from './overlap.js';
 
+// Filter events at data level (before rendering)
+export function applyFiltersToEvents(events, selectedDate, selectedTrack, showOnlyMyEvents) {
+  const myEvents = getMyEvents();
+
+  return events.filter(event => {
+    const eventDate = event.date.split('T')[0];
+    const matchesDate = !selectedDate || eventDate === selectedDate;
+    const matchesTrack = !selectedTrack || event.track === selectedTrack;
+    const matchesMyEvents = !showOnlyMyEvents || myEvents.includes(event.id);
+    return matchesDate && matchesTrack && matchesMyEvents;
+  });
+}
+
 export function updateFilterOptions(dateFilter, trackFilter, eventCards) {
   const selectedDate = dateFilter.value;
   const selectedTrack = trackFilter.value;
