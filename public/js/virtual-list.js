@@ -6,12 +6,17 @@ let renderedCount = 0;
 let container = null;
 let observer = null;
 let sentinel = null;
+let eventsById = new Map();
 
 export function initVirtualList(events, containerEl) {
   allEvents = events;
   filteredEvents = events;
   container = containerEl;
   renderedCount = 0;
+
+  // Build lookup map for event data by ID
+  eventsById = new Map();
+  events.forEach(event => eventsById.set(event.id, event));
 
   // Create sentinel element for IntersectionObserver
   sentinel = document.createElement('div');
@@ -44,6 +49,10 @@ export function getRenderedCards() {
 
 export function getAllEvents() {
   return allEvents;
+}
+
+export function getEventById(id) {
+  return eventsById.get(id);
 }
 
 function renderNextBatch() {

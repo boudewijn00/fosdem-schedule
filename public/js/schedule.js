@@ -1,7 +1,8 @@
 import { getMyEvents, toggleEvent, getMyEventsFilterState, saveMyEventsFilterState } from './storage.js';
 import { updateSingleButtonState } from './buttons.js';
 import { applyFiltersToEvents } from './filters.js';
-import { initVirtualList, setFilteredEvents, getRenderedCards, getAllEvents } from './virtual-list.js';
+import { initVirtualList, setFilteredEvents, getRenderedCards } from './virtual-list.js';
+import { findOverlapGroups, clearOverlapLayout, applyOverlapLayout } from './overlap.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const dateFilter = document.getElementById('date-filter');
@@ -66,6 +67,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function applyOverlapStyling() {
+    const cards = getRenderedCards();
+
+    if (!myEventsFilter.checked) {
+      // Clear overlap layout and styling when filter is off
+      clearOverlapLayout(cards);
+      cards.forEach(card => {
+        card.classList.remove('bg-red-50', 'border-red-300');
+        card.classList.add('bg-white', 'border-gray-200');
+      });
+      return;
+    }
+
+    const myEvents = getMyEvents();
+    const groups = findOverlapGroups(myEvents, cards);
+    clearOverlapLayout(cards);
+    applyOverlapLayout(groups);
+
+    // Apply red styling to overlapping cards
+    const overlappingIds = new Set(groups.flat());
+    cards.forEach(card => {
+      const cardId = card.getAttribute('data-id');
+      if (overlappingIds.has(cardId)) {
+        card.classList.add('bg-red-50', 'border-red-300');
+        card.classList.remove('bg-white', 'border-gray-200');
+      } else {
+        card.classList.remove('bg-red-50', 'border-red-300');
+        card.classList.add('bg-white', 'border-gray-200');
+      }
+    });
+  }
+
   function attachCardListeners() {
     const cards = getRenderedCards();
     cards.forEach(card => {
@@ -126,9 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
   initVirtualList(initialFiltered, eventsContainer);
   eventCount.textContent = `${initialFiltered.length} events`;
 
-  // Listen for batch render events to attach listeners
-  eventsContainer.addEventListener('batchRendered', attachCardListeners);
+  // Listen for batch render events to attach listeners and apply overlap styling
+  eventsContainer.addEventListener('batchRendered', () => {
+    attachCardListeners();
+    applyOverlapStyling();
+  });
   attachCardListeners();
+  applyOverlapStyling();
 
   // Initialize states
   updateMyEventsCount();

@@ -1,15 +1,16 @@
 import { getMyEvents } from './storage.js';
 import { timeToMinutes, eventsOverlap } from './time-utils.js';
+import { getEventById } from './virtual-list.js';
 
 export function hasOverlapWithSavedEvents(eventId, date, start, end) {
   const myEvents = getMyEvents();
   for (const savedId of myEvents) {
     if (savedId === eventId) continue;
-    const savedCard = document.querySelector(`.event-card[data-id="${savedId}"]`);
-    if (!savedCard) continue;
-    const savedDate = savedCard.getAttribute('data-date');
-    const savedStart = savedCard.getAttribute('data-start');
-    const savedEnd = savedCard.getAttribute('data-end');
+    const savedEvent = getEventById(savedId);
+    if (!savedEvent) continue;
+    const savedDate = savedEvent.date.split('T')[0];
+    const savedStart = savedEvent.start;
+    const savedEnd = savedEvent.end;
     if (eventsOverlap(date, start, end, savedDate, savedStart, savedEnd)) {
       return true;
     }
@@ -73,6 +74,8 @@ const overlapWrappers = [];
 
 export function clearOverlapLayout(eventCards) {
   overlapWrappers.forEach(wrapper => {
+    // Skip if wrapper is no longer in the DOM (e.g., after container.innerHTML = '')
+    if (!wrapper.parentNode) return;
     const cards = Array.from(wrapper.children);
     cards.forEach(card => {
       wrapper.parentNode.insertBefore(card, wrapper);
